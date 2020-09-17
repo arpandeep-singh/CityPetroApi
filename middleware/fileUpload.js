@@ -1,6 +1,7 @@
 const asyncHandler = require("../middleware/async");
 const ErrorResponse = require("../utils/errorResponse");
 const path = require("path");
+const { v4: uuidv4 } = require("uuid");
 
 exports.uploadPaperwork = asyncHandler(async (req, res, next) => {
   if (!req.files) {
@@ -18,7 +19,7 @@ exports.uploadPaperwork = asyncHandler(async (req, res, next) => {
 
   const paperWork = imagefiles.map(function async(file) {
     //create custom filename
-    file.name = `doc_${req.body.stationID}_${Date.now()}${
+    file.name = `doc_${req.body.stationID}_${uuidv4()}${
       path.parse(file.name).ext
     }`;
     file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`, async (err) => {
