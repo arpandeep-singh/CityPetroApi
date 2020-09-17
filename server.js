@@ -17,8 +17,7 @@ const loads = require("./routes/loads");
 const cities = require("./routes/cities");
 const stations = require("./routes/stations");
 const rates = require("./routes/rates");
-const basicRates = require("./routes/basicRates");
-const advRates = require("./routes/advRates");
+const auth = require("./routes/auth");
 
 const app = express();
 
@@ -40,8 +39,7 @@ app.use("/api/v1/loads", loads);
 app.use("/api/v1/cities", cities);
 app.use("/api/v1/stations", stations);
 app.use("/api/v1/rates", rates);
-app.use("/api/v1/rates/basic", basicRates);
-app.use("/api/v1/rates/adv", advRates);
+app.use("/api/v1/auth", auth);
 
 app.use(errorHandler);
 
