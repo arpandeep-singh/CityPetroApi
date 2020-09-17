@@ -10,16 +10,13 @@ exports.uploadPaperwork = asyncHandler(async (req, res, next) => {
   const files = req.files.docs;
 
   //Accept only images
-  const notAccepted = files.map(function async(file) {
-    if (!file.mimetype.startsWith("image")) {
+  const imagefiles = files.filter(function async(file) {
+    if (file.mimetype.startsWith("image")) {
       return file.name;
-    } else {
-      return "Accepted";
     }
   });
-  console.log(notAccepted);
 
-  const paperWork = files.map(function async(file) {
+  const paperWork = imagefiles.map(function async(file) {
     //create custom filename
     file.name = `doc_${req.body.stationID}_${Date.now()}${
       path.parse(file.name).ext
@@ -34,7 +31,7 @@ exports.uploadPaperwork = asyncHandler(async (req, res, next) => {
     });
     return file.name;
   });
-  console.log(paperWork);
+  //console.log(paperWork);
   req.body.paperwork = paperWork;
   next();
 });
