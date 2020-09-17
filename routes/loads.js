@@ -8,7 +8,8 @@ const {
 } = require("../controllers/loads");
 
 const router = express.Router();
-router.route("/").get(getLoads).post(createLoad);
+const { uploadPaperwork } = require("../middleware/fileUpload");
+router.route("/").get(getLoads).post(uploadPaperwork, createLoad);
 router.route("/:id").get(getLoad).put(updateLoad).delete(deleteLoad);
 
 module.exports = router;

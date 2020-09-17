@@ -39,4 +39,23 @@ const LoadSchema = new mongoose.Schema({
   paperwork: [String],
 });
 
+//Waiting and Split Charges
+LoadSchema.pre("save", function (next) {
+  this.waitingTime = this.waitingTime ? this.waitingTime : 0;
+  this.splits = this.splits ? this.splits : 0;
+
+  this.waitingCharge = Math.round(
+    this.waitingTime * (process.env.WAITING_RATE / 60)
+  );
+  const splitCharges = this.splits * process.env.SPLIT_RATE;
+  this.totalRate =
+    this.terminalRate + this.waitingCharge + parseInt(splitCharges);
+  next();
+});
+
+// LoadSchema.pre('save',function(next){
+
+//   next();
+// })
+
 module.exports = mongoose.model("Load", LoadSchema);

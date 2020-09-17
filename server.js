@@ -2,6 +2,8 @@ const express = require("express");
 const dotenv = require("dotenv");
 const morgan = require("morgan");
 const colors = require("colors");
+const path = require("path");
+const fileupload = require("express-fileupload");
 const errorHandler = require("./middleware/error");
 const connectDB = require("./config/db");
 
@@ -12,6 +14,11 @@ dotenv.config({ path: "./config/config.env" });
 connectDB();
 
 const loads = require("./routes/loads");
+const cities = require("./routes/cities");
+const stations = require("./routes/stations");
+const rates = require("./routes/rates");
+const basicRates = require("./routes/basicRates");
+const advRates = require("./routes/advRates");
 
 const app = express();
 
@@ -23,7 +30,18 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 
+//File uploading
+app.use(fileupload());
+
+//Set static folder
+app.use(express.static(path.join(__dirname, "public")));
+
 app.use("/api/v1/loads", loads);
+app.use("/api/v1/cities", cities);
+app.use("/api/v1/stations", stations);
+app.use("/api/v1/rates", rates);
+app.use("/api/v1/rates/basic", basicRates);
+app.use("/api/v1/rates/adv", advRates);
 
 app.use(errorHandler);
 

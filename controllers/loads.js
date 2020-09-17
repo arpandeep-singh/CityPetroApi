@@ -1,5 +1,7 @@
+const path = require("path");
 const ErrorResponse = require("../utils/errorResponse");
 const asyncHandler = require("../middleware/async");
+
 const Load = require("../models/Load");
 
 //@desc     Get all loads
@@ -35,23 +37,13 @@ exports.getLoad = asyncHandler(async (req, res, next) => {
 //@access   Private
 exports.createLoad = asyncHandler(async (req, res, next) => {
   console.log(req.body);
-  const waitingCharge = req.body.waitingTime * (process.env.WAITING_RATE / 60);
-  const splitRate = req.body.splits * process.env.SPLIT_RATE;
-  const totalRate = parseInt(req.body.terminalRate) + waitingCharge + splitRate;
-
-  const load = await Load.create({
-    ...req.body,
-    waitingCharge: waitingCharge,
-    totalRate: totalRate,
-  });
+  const load = await Load.create(req.body);
   res.status(201).json({
     success: true,
     data: load,
   });
 });
 
-//@desc     Update load
-//@route    PUT /api/v1/loads/:id
 //@access   Private
 exports.updateLoad = asyncHandler(async (req, res, next) => {
   const load = await Load.findByIdAndUpdate(req.params.id, req.body, {
