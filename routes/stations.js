@@ -8,8 +8,13 @@ const {
 } = require("../controllers/stations");
 
 const router = express.Router();
+const { protect } = require("../middleware/auth");
 
-router.route("/").get(getStations).post(createStation);
-router.route("/:id").get(getStation).put(updateStation).delete(deleteStation);
+router.route("/").get(protect, getStations).post(protect, createStation);
+router
+  .route("/:id")
+  .get(protect, getStation)
+  .put(protect, updateStation)
+  .delete(protect, deleteStation);
 
 module.exports = router;

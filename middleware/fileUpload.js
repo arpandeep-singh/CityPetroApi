@@ -32,7 +32,7 @@ exports.uploadPaperwork = asyncHandler(async (req, res, next) => {
     });
     return file.name;
   });
-  //console.log(paperWork);
+
   req.body.paperwork = paperWork;
   next();
 });

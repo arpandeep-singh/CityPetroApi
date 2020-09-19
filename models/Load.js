@@ -36,7 +36,15 @@ const LoadSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please add Upt Link"],
   },
-  paperwork: [String],
+  paperwork: {
+    type: [String],
+    required: [true, "Paperwork is required"],
+  },
+  user: {
+    type: mongoose.Schema.ObjectId,
+    ref: "User",
+    required: true,
+  },
 });
 
 //Waiting and Split Charges

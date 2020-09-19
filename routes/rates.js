@@ -8,7 +8,15 @@ const {
 } = require("../controllers/Rates");
 
 const router = express.Router();
-router.route("/").get(getRates).post(createRate);
-router.route("/:id").get(getRate).put(updateRate).delete(deleteRate);
+const { protect, authorize } = require("../middleware/auth");
+router
+  .route("/")
+  .get(protect, getRates)
+  .post(protect, authorize("admin"), createRate);
+router
+  .route("/:id")
+  .get(protect, getRate)
+  .put(protect, authorize("admin"), updateRate)
+  .delete(protect, authorize("admin"), deleteRate);
 
 module.exports = router;

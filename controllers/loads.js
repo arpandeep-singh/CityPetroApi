@@ -1,4 +1,3 @@
-const path = require("path");
 const ErrorResponse = require("../utils/errorResponse");
 const asyncHandler = require("../middleware/async");
 
@@ -8,12 +7,7 @@ const Load = require("../models/Load");
 //@route    GET /api/v1/loads
 //@access   Private
 exports.getLoads = asyncHandler(async (req, res, next) => {
-  const loads = await Load.find();
-  res.status(200).json({
-    success: true,
-    count: loads.length,
-    data: loads,
-  });
+  res.status(200).json(res.advancedResults);
 });
 
 //@desc     Get single loads
@@ -36,7 +30,9 @@ exports.getLoad = asyncHandler(async (req, res, next) => {
 //@route    POST /api/v1/loads
 //@access   Private
 exports.createLoad = asyncHandler(async (req, res, next) => {
-  console.log(req.body);
+  //Add user to body
+  req.body.user = req.user.id;
+
   const load = await Load.create(req.body);
   res.status(201).json({
     success: true,
@@ -66,13 +62,26 @@ exports.updateLoad = asyncHandler(async (req, res, next) => {
 //@route    Delete /api/v1/loads/:id
 //@access   Private
 exports.deleteLoad = asyncHandler(async (req, res, next) => {
-  const load = await Load.findByIdAndDelete(req.params.id);
+  const load = await Load.findById(req.params.id);
 
   if (!load) {
     return next(
       new ErrorResponse(`Load not found with id of ${req.params.id}`, 404)
     );
   }
+
+  //Make sure user is Load owner
+  if (load.user.toString() !== req.user.id && req.user.role != "admin") {
+    return next(
+      new ErrorResponse(
+        `User is not authorized to delete this load ${req.params.id}`,
+        403
+      )
+    );
+  }
+
+  load.remove();
+
   res.status(200).json({
     success: true,
     data: {},

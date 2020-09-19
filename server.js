@@ -4,6 +4,7 @@ const morgan = require("morgan");
 const colors = require("colors");
 const path = require("path");
 const fileupload = require("express-fileupload");
+const cookieParser = require("cookie-parser");
 const errorHandler = require("./middleware/error");
 const connectDB = require("./config/db");
 
@@ -18,11 +19,15 @@ const cities = require("./routes/cities");
 const stations = require("./routes/stations");
 const rates = require("./routes/rates");
 const auth = require("./routes/auth");
+const users = require("./routes/users");
 
 const app = express();
 
 //Body parser
 app.use(express.json());
+
+//Cookie parser
+app.use(cookieParser());
 
 //Dev logging middleware
 if (process.env.NODE_ENV === "development") {
@@ -40,6 +45,7 @@ app.use("/api/v1/cities", cities);
 app.use("/api/v1/stations", stations);
 app.use("/api/v1/rates", rates);
 app.use("/api/v1/auth", auth);
+app.use("/api/v1/users", users);
 
 app.use(errorHandler);
 

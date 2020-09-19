@@ -9,6 +9,7 @@ exports.getCities = asyncHandler(async (req, res, next) => {
   const cities = await City.find().populate("rate");
   const result = cities.map(function (city) {
     return {
+      id: city._id,
       name: city.name,
       basicRate: city.basicRate,
       advRate: city.advRate,

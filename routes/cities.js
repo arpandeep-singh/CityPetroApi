@@ -8,7 +8,15 @@ const {
 } = require("../controllers/cities");
 
 const router = express.Router();
-router.route("/").get(getCities).post(createCity);
-router.route("/:id").get(getCity).put(updateCity).delete(deleteCity);
+const { protect, authorize } = require("../middleware/auth");
+router
+  .route("/")
+  .get(protect, getCities)
+  .post(protect, authorize("admin"), createCity);
+router
+  .route("/:id")
+  .get(getCity)
+  .put(protect, authorize("admin"), updateCity)
+  .delete(protect, authorize("admin"), deleteCity);
 
 module.exports = router;
