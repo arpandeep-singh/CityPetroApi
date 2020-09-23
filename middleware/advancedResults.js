@@ -2,7 +2,11 @@ const advancedResults = (model, populate) => async (req, res, next) => {
   let query;
 
   //Copy req.query
-  const reqQuery = { ...req.query };
+  let reqQuery = { ...req.query, user: req.user._id };
+  if (req.user.role == "admin") {
+    reqQuery = { ...req.query };
+    populate = "user";
+  }
 
   //Fields to exclude
   const removeFields = ["select", "sort", "page", "limit"];
@@ -25,7 +29,7 @@ const advancedResults = (model, populate) => async (req, res, next) => {
   //Select Fields
   if (req.query.select) {
     const fields = req.query.select.split(",").join(" ");
-    query = query.select(fields);
+    query = query.select(`${fields}`);
   }
 
   //Sort
@@ -38,7 +42,7 @@ const advancedResults = (model, populate) => async (req, res, next) => {
 
   //Pagination
   const page = parseInt(req.query.page, 10) || 1;
-  const limit = parseInt(req.query.limit, 10) || 25;
+  const limit = parseInt(req.query.limit, 10) || 100;
   const startIndex = (page - 1) * limit;
   const endIndex = page * limit;
   const total = await model.countDocuments();

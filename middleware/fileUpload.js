@@ -19,9 +19,16 @@ exports.uploadPaperwork = asyncHandler(async (req, res, next) => {
 
   const paperWork = imagefiles.map(function async(file) {
     //create custom filename
+
+    // const extension = path.parse(file.name).ext
+    //   ? path.parse(file.name).ext
+    //   : ".jpg";
     file.name = `doc_${req.body.stationID}_${uuidv4()}${
       path.parse(file.name).ext
-    }`;
+    }`
+      .split(" ")
+      .join("-");
+    console.log(file.name);
     file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`, async (err) => {
       if (err) {
         console.log(err);

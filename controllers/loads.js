@@ -32,8 +32,9 @@ exports.getLoad = asyncHandler(async (req, res, next) => {
 exports.createLoad = asyncHandler(async (req, res, next) => {
   //Add user to body
   req.body.user = req.user.id;
-
+  console.log(req.body.waitingTime);
   const load = await Load.create(req.body);
+  console.log(load);
   res.status(201).json({
     success: true,
     data: load,

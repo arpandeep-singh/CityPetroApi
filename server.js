@@ -20,6 +20,7 @@ const stations = require("./routes/stations");
 const rates = require("./routes/rates");
 const auth = require("./routes/auth");
 const users = require("./routes/users");
+const invoices = require("./routes/invoices");
 
 const app = express();
 
@@ -46,6 +47,7 @@ app.use("/api/v1/stations", stations);
 app.use("/api/v1/rates", rates);
 app.use("/api/v1/auth", auth);
 app.use("/api/v1/users", users);
+app.use("/api/v1/invoices", invoices);
 
 app.use(errorHandler);
 

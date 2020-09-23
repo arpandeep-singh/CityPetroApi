@@ -10,6 +10,9 @@ const sgMail = require("@sendgrid/mail");
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const fs = require("fs");
+const Invoice = require("../models/Invoice");
+const sendPushNotification = require("../utils/pushNotifications");
+const { default: Expo } = require("expo-server-sdk");
 
 exports.fetchData = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.params.id);
@@ -132,7 +135,12 @@ exports.createPdf = asyncHandler(async (req, res, next) => {
     fs.writeFileSync(fileLocation, pdf);
 
     res.file = fileName;
-    console.log(res.file);
+
+    await Invoice.create({
+      link: fileLocation.replace("/public", ""),
+      user: req.driver._id,
+      fileName: fileName,
+    });
 
     res.pdfStatus = true;
   } catch (error) {
@@ -146,7 +154,7 @@ exports.createPdf = asyncHandler(async (req, res, next) => {
   res.data = {
     success: true,
     count: res.loads.length,
-    link: res.file,
+    link: `${process.env.PROTOCOL}://${process.env.DOMAIN}:${process.env.PORT}/invoices/${res.file}`,
     status: res.pdfStatus,
     message: "Invoice generated succesfully",
   };
@@ -154,8 +162,19 @@ exports.createPdf = asyncHandler(async (req, res, next) => {
 });
 
 exports.notifyUser = asyncHandler(async (req, res, next) => {
+  const { pushToken } = req.driver;
+  if (pushToken.length > 0) {
+    pushToken.map(function (token) {
+      if (Expo.isExpoPushToken(token))
+        sendPushNotification(
+          token,
+          `[${req.driver.name}]: Your invoice is Ready!`
+        );
+    });
+  }
+
   request(
-    `http://localhost:5000/${res.file}`,
+    `http://localhost:5000/invoices/${res.file}`,
     { encoding: null },
     (err, res, body) => {
       if (err) {
@@ -173,7 +192,7 @@ exports.notifyUser = asyncHandler(async (req, res, next) => {
           attachments: [
             {
               content: textBuffered.toString("base64"),
-              filename: `${res.file}`.toString(),
+              filename: `${req.driver.name}_1sep-15sep.pdf`.split(" ").join(""),
               type: "application/pdf",
               disposition: "attachment",
               contentId: "mytext",
@@ -184,6 +203,7 @@ exports.notifyUser = asyncHandler(async (req, res, next) => {
         sgMail.send(msg);
       }
       res.data = { ...res.data, fileName: res.file };
+
       next();
     }
   );

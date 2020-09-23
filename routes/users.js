@@ -18,14 +18,20 @@ const router = express.Router();
 const { protect, authorize } = require("../middleware/auth");
 
 router.use(protect);
-router.use(authorize("admin"));
 
-router.route("/").get(advancedResults(User), getUsers).post(createUser);
+router
+  .route("/")
+  .get(authorize("admin"), advancedResults(User), getUsers)
+  .post(authorize("admin"), createUser);
 
-router.route("/:id").get(getUser).put(updateUser).delete(deleteUser);
+router
+  .route("/:id")
+  .get(getUser)
+  .put(updateUser)
+  .delete(authorize("admin"), deleteUser);
 router
   .route("/invoice/:id")
-  .get(
+  .post(
     createInvoice.fetchData,
     createInvoice.createPdf,
     createInvoice.notifyUser,

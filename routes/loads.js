@@ -18,9 +18,10 @@ const { protect, authorize } = require("../middleware/auth");
 const { uploadPaperwork } = require("../middleware/fileUpload");
 
 router.use(protect);
+
 router
   .route("/")
-  .get(advancedResults(Load, "user"), getLoads)
+  .get(advancedResults(Load), getLoads)
   .post(uploadPaperwork, createLoad);
 
 router

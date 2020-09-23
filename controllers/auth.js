@@ -79,3 +79,30 @@ exports.getMe = asyncHandler(async (req, res, next) => {
     data: user,
   });
 });
+
+exports.updatePushToken = asyncHandler(async (req, res, next) => {
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    { $addToSet: { pushToken: req.body.token } },
+    {
+      runValidators: true,
+      new: true,
+    }
+  );
+  res.status(200).json(user);
+});
+
+exports.deletePushToken = asyncHandler(async (req, res, next) => {
+  if (!req.query.token) {
+    return next(new ErrorResponse(`No token provided`, 400));
+  }
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    { $pull: { pushToken: req.query.token } },
+    {
+      runValidators: true,
+      new: true,
+    }
+  );
+  res.status(200).json(user);
+});
